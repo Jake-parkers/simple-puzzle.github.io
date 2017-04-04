@@ -1,0 +1,147 @@
+<!DOCTYPE>
+<html>
+    <head>
+
+            <title>Simple Puzzle</title>
+            <style>
+                body{
+                    background: #3b92ad;
+                    color: #fff;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                }
+
+                header{
+                    color: #f5f5f5;
+                    text-align: center;
+                    font-size: 25px;
+                    padding: 20px;
+
+                }
+
+                table{
+                    border:2px solid #d0d0d0;
+                    border-radius: 5px;
+                    width: 400px;
+                    text-align: center;
+                    position: relative;
+                    left: 0;
+                    right: 0;
+                    margin-top: 50px;
+                }
+            </style>
+    </head>
+
+    <body>
+
+        <script>
+            var name = prompt("Whats your name please");
+            var header = document.createElement('header');
+            header.textContent = `Hello ${name}. Thanks for stopping by. To play the game, kindly doubleclick on the missing maze #cheers`;
+            var body = document.querySelector("body");
+            body.appendChild(header);
+            var eid = "";
+            var extracted_block_array = [];
+            var game = [];
+            var unmodified_game = [];
+            game = [
+                ['A','A','R','O','N'],
+                ["K",'A',"R","I","M"],
+                ["C","W","A","A","L"],
+                ["A","N","D","R","E"],
+                ["J","A","D","E","N"]
+            ];
+
+            unmodified_game = [
+                ['A','A','R','O','N'],
+                ["K",'A',"R","I","M"],
+                ["C","W","A","A","L"],
+                ["A","N","D","R","E"],
+                ["J","A","D","E","N"]
+            ];
+            var tab = "<center><table border = '1' style='border-collapse:collapse;font-size:30px;'>";
+            for(i = 0; i < game.length; i++){
+                tab += "<tr>";
+                for(j = 0; j < game[i].length; j++){
+                    if((game[i][j] == "O") || (game[i][j] == "M") || (game[i][j] == "D") || (game[i][j] == "C")){
+                        var id_suffix = "block"+i+j;
+                        game[i][j] = "<input type='submit' value='.' id='"+id_suffix+"'>";
+                    }
+                    tab += "<td style='padding:10px;'>" +game[i][j] +"</td>";
+                }
+                tab += "</tr>";
+            }
+
+            tab += "</table></center>";
+            document.write(tab);
+            
+
+            function extract_indexes(element_id){
+                /*
+                    * Since the index is at the end, use substr(-2) to get the last two elements since they represent the blocks
+                */
+                return element_id.substr(-2);
+            }
+
+            function main_function(eid){
+                // extract the indexes of the clicked block in the puzzle
+                var element_block = extract_indexes(eid);
+
+                /**
+                    * The code below checks if the length of the array of extracted indexes 
+                    * If it is > 0 then 
+                        * it clears it so as to ensure proper indexing of the puzzle array values and then pushes the new indexes to it
+                    * if it is == 0 then   
+                        * it pushes the new indexes to the array
+                */
+                if(extracted_block_array.length > 0){
+                        extracted_block_array.length = 0;
+                }
+                for(i = 0; i < element_block.length; i++){
+                    extracted_block_array.push(element_block[i]);
+                } 
+
+                // end array manipulation
+
+                /*
+                    * The clicked element has been confirmed as an input element hence the user is prompted to enter the missing letter for that block.
+                    * The user typed value is verified against the value in the puzzle array by the {verify()} function
+                */
+                var elem = document.getElementById(eid);
+                elem.addEventListener('click', function(){
+                    var ans = prompt("What is the missing letter");
+                    verify(ans, extracted_block_array,elem)
+                });
+            }
+
+            function verify(answer,arr,element){
+                // verifies the user's answer against the value in the puzzle array
+                if(answer == unmodified_game[arr[0]][arr[1]]){
+                    element.parentElement.style.backgroundColor = '#f5f5f5';    
+                    element.parentElement.style.color = '#3b92ad';    
+                    element.parentElement.innerHTML = answer;
+                }else{
+                    alert("Oopsy that was wrong");
+                }
+            }
+
+            // The anonymous function below checks for any click event on the page
+            // If the element clicked is an input element, it means it's one of the masked elements of the puzzle 
+            // Hence the main_function is called to handle the rest.
+            (function(){
+
+                document.addEventListener('click', function(e) {
+                    e = e || window.event;
+                    var target = e.target || e.srcElement,
+                        text =  target.textContent || target.innerText; // e.target  and e.srcElement returns the clicked element
+                    if(e.srcElement.localName == 'input'){ //e.srcElement.localName returns the local name of the clicked element
+                        eid = e.srcElement.id;
+                        main_function(eid);
+                    }
+                        
+                });
+
+            })();
+            
+        </script>
+    </body>
+</html>
